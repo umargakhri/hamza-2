@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saba & Hamza | Nikkah Ceremony</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #004d40;
+            --gold: #c5a059;
+            --cream: #fdfbf7;
+            --text: #2c3e50;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--cream); color: var(--text); font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+
+        /* FIRST PAGE: THE GATE */
+        #gate {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--emerald); z-index: 1000; display: flex;
+            justify-content: center; align-items: center; 
+            transition: all 1s cubic-bezier(0.7, 0, 0.3, 1);
+            cursor: pointer;
+        }
+        #gate.hidden { transform: translateY(-100%); visibility: hidden; }
+
+        .gate-card {
+            text-align: center; border: 1px solid var(--gold); padding: 50px 30px;
+            background: var(--cream); box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            max-width: 90%;
+        }
+
+        /* MAIN CONTENT */
+        .container { max-width: 500px; margin: 0 auto; padding: 50px 20px; text-align: center; }
+        
+        .bismillah { font-family: 'Noto Nastaliq Urdu', serif; font-size: 1.8rem; color: var(--emerald); margin-bottom: 30px; }
+        
+        .verse-box { background: rgba(197, 160, 89, 0.08); padding: 25px 15px; border-radius: 15px; margin-bottom: 40px; border: 1px solid rgba(197, 160, 89, 0.2); }
+        .arabic { font-family: 'Noto Nastaliq Urdu', serif; font-size: 1.1rem; line-height: 2.8; color: var(--emerald); }
+        .urdu { font-family: 'Noto Nastaliq Urdu', serif; font-size: 0.9rem; line-height: 2.2; margin-top: 15px; }
+
+        .invitation-line { font-family: 'Playfair Display', serif; font-size: 1.1rem; line-height: 1.8; margin: 30px 0; color: var(--text); }
+        .couple-names { font-family: 'Pinyon Script', cursive; font-size: clamp(3.5rem, 12vw, 4.5rem); color: var(--emerald); margin: 15px 0; }
+        
+        /* SCRATCH AREA */
+        .scratch-area {
+            position: relative; width: 300px; height: 180px; margin: 20px auto;
+            background: white; border: 1px solid var(--gold); border-radius: 10px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            overflow: hidden;
+        }
+        #reveal-text { z-index: 1; opacity: 0; transition: opacity 0.5s; }
+        #scratch-canvas { position: absolute; top: 0; left: 0; z-index: 5; cursor: crosshair; touch-action: none; }
+
+        /* COUNTDOWN */
+        .timer { display: flex; gap: 5px; margin-top: 15px; justify-content: center; }
+        .t-box { border: 1px solid var(--gold); padding: 5px; min-width: 55px; border-radius: 4px; background: white; }
+        .t-box span { display: block; font-weight: bold; color: var(--emerald); font-size: 1.1rem; }
+        .t-label { font-size: 0.55rem; text-transform: uppercase; color: var(--gold); }
+
+        /* RSVP */
+        .rsvp-section { background: white; border: 1px solid var(--gold); padding: 30px 20px; margin: 50px 0; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 4px; }
+
+        .btn {
+            background: var(--gold); color: white; padding: 15px 30px;
+            border: none; text-transform: uppercase; letter-spacing: 2px;
+            font-size: 0.8rem; cursor: pointer; font-weight: bold; width: 100%;
+        }
+
+        #music-toggle {
+            position: fixed; bottom: 20px; left: 20px; background: var(--emerald);
+            color: var(--gold); width: 45px; height: 45px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 2000;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-india.mp3" type="audio/mpeg">
+    </audio>
+    <div id="music-toggle" onclick="toggleMusic()">🎵</div>
+
+    <div id="gate" onclick="openInvite()">
+        <div class="gate-card">
+            <p style="letter-spacing: 5px; font-size: 0.7rem; color: var(--gold);">INVITATION FOR THE NIKKAH OF</p>
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin: 15px 0; color: var(--emerald);">Saba & Hamza</h2>
+            <p style="font-size: 0.8rem; margin-top: 10px; opacity: 0.7;">Click to Open</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+        
+        <div class="verse-box">
+            <p class="arabic">وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْکُنُوا إِلَيْهَا وَجَعَلَ بَيْنَکُم مَّوَدَّةً وَرَحْمَةً</p>
+            <p class="urdu">اور اُس کی نشانیوں میں سے ہے کہ اُس نے تمہارے لیے تم ہی میں سے جوڑے پیدا کیے تاکہ تم اُن سے سکون حاصل کرو، اور اُس نے تمہارے درمیان محبت اور رحمت رکھ دی۔</p>
+            <p style="font-size: 0.7rem; margin-top: 10px; color: var(--gold);">سورۃ الروم — آیت 21</p>
+        </div>
+
+        <div class="invitation-line">
+            <strong>Master Muhammad Sharif</strong><br>
+            <span style="font-size: 0.8rem; letter-spacing: 2px;">CORDIALLY INVITES YOU TO THE NIKKAH CEREMONY OF</span>
+        </div>
+
+        <h1 class="couple-names">Hamza & Saba</h1>
+
+        <p style="font-size: 0.7rem; letter-spacing: 2px; color: var(--gold); margin-top: 30px;">SCRATCH TO REVEAL THE MOMENT</p>
+        <div class="scratch-area">
+            <div id="reveal-text">
+                <p style="font-family: 'Playfair Display'; font-size: 1.2rem; color: var(--emerald); font-weight: bold;">17 MARCH 2026</p>
+                <p style="font-size: 0.8rem;">04:30 PM INSHALLAH</p>
+                
+                <div class="timer">
+                    <div class="t-box"><span id="days">00</span><div class="t-label">Days</div></div>
+                    <div class="t-box"><span id="hours">00</span><div class="t-label">Hrs</div></div>
+                    <div class="t-box"><span id="mins">00</span><div class="t-label">Min</div></div>
+                    <div class="t-box"><span id="secs">00</span><div class="t-label">Sec</div></div>
+                </div>
+            </div>
+            <canvas id="scratch-canvas" width="300" height="180"></canvas>
+        </div>
+
+        <div style="margin: 40px 0;">
+            <p style="font-size: 0.7rem; letter-spacing: 2px; color: var(--gold);">VENUE</p>
+            <p style="font-family: 'Playfair Display'; font-size: 1.1rem; color: var(--emerald);">Residency of Master Muhammad Sharif</p>
+            <p style="font-size: 0.9rem;">Gakhri, Lalamusa</p>
+            <p style="color: var(--gold); font-size: 1.1rem; margin-top: 15px;">03338505970</p>
+        </div>
+
+        <div style="border: 1px solid var(--gold); padding: 20px; border-radius: 40px 0;">
+            <p style="font-size: 0.7rem; letter-spacing: 2px; color: var(--gold);">DRESS CODE</p>
+            <p style="font-family: 'Playfair Display'; font-size: 1.1rem; color: var(--emerald);">White Traditional Shalwar Kameez</p>
+        </div>
+
+        <div class="rsvp-section">
+            <p style="font-family: 'Playfair Display'; font-size: 1.2rem; color: var(--emerald); margin-bottom: 15px;">Confirm Arrival</p>
+            <form id="rsvpForm">
+                <input type="text" placeholder="Your Name" required>
+                <select required>
+                    <option value="">Guests count</option>
+                    <option value="1">1 Person</option>
+                    <option value="2">2 People</option>
+                    <option value="Family">Family</option>
+                </select>
+                <button type="submit" class="btn">RSVP Now</button>
+            </form>
+            <p id="thanks" style="display:none; color: var(--emerald); font-weight: bold; margin-top: 10px;">Shukriya!</p>
+        </div>
+
+        <footer style="font-size: 0.6rem; opacity: 0.5; padding: 40px 0;">SABA & HAMZA | 2026</footer>
+    </div>
+
+    <script>
+        // FUNCTION TO OPEN THE INVITATION
+        function openInvite() {
+            const gate = document.getElementById('gate');
+            gate.classList.add('hidden'); // This definitely slides the first page up
+            toggleMusic();
+            initScratch();
+        }
+
+        // MUSIC LOGIC
+        let isPlaying = false;
+        function toggleMusic() {
+            const m = document.getElementById('bgMusic');
+            if(!isPlaying) { 
+                m.play().catch(e => console.log("Music blocked by browser")); 
+                isPlaying = true; 
+            } else { 
+                m.pause(); 
+                isPlaying = false; 
+            }
+        }
+
+        // SCRATCH CARD LOGIC
+        function initScratch() {
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = '#c5a059';
+            ctx.fillRect(0, 0, 300, 180);
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.fillText('SCRATCH TO REVEAL', 150, 95);
+
+            let isDown = false;
+            function scratch(e) {
+                if(!isDown) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 25, 0, Math.PI*2);
+                ctx.fill();
+                document.getElementById('reveal-text').style.opacity = '1';
+            }
+
+            canvas.addEventListener('mousedown', () => isDown = true);
+            canvas.addEventListener('mouseup', () => isDown = false);
+            canvas.addEventListener('mousemove', scratch);
+            canvas.addEventListener('touchstart', (e) => { isDown = true; e.preventDefault(); });
+            canvas.addEventListener('touchend', () => isDown = false);
+            canvas.addEventListener('touchmove', (e) => { scratch(e); e.preventDefault(); });
+        }
+
+        // COUNTDOWN TIMER
+        const eventDate = new Date("March 17, 2026 16:30:00").getTime();
+        setInterval(function() {
+            const now = new Date().getTime();
+            const diff = eventDate - now;
+            document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById('mins').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById('secs').innerText = Math.floor((diff % (1000 * 60)) / 1000);
+        }, 1000);
+
+        // RSVP FORM SUBMIT
+        document.getElementById('rsvpForm').onsubmit = function(e) {
+            e.preventDefault();
+            this.style.display = 'none';
+            document.getElementById('thanks').style.display = 'block';
+        };
+    </script>
+</body>
+</html>
